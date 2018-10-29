@@ -1,7 +1,7 @@
 ﻿  poll.cpp
-c:\users\esther\source\repos\project3estherli\project3estherli\poll.cpp(68): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\source\repos\project3estherli\project3estherli\poll.cpp(72): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\source\repos\project3estherli\project3estherli\poll.cpp(81): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\source\repos\project3estherli\project3estherli\poll.cpp(94): warning C4018: '<': signed/unsigned mismatch
-c:\users\esther\source\repos\project3estherli\project3estherli\poll.cpp(108): warning C4018: '<': signed/unsigned mismatch
-  Project3EstherLi.vcxproj -> C:\Users\Esther\source\repos\Project3EstherLi\Debug\Project3EstherLi.exe
+c:\users\esther\desktop\cs31\project3estherli\project3estherli\poll.cpp(72): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs31\project3estherli\project3estherli\poll.cpp(76): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs31\project3estherli\project3estherli\poll.cpp(85): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs31\project3estherli\project3estherli\poll.cpp(98): warning C4018: '<': signed/unsigned mismatch
+c:\users\esther\desktop\cs31\project3estherli\project3estherli\poll.cpp(112): warning C4018: '<': signed/unsigned mismatch
+  Project3EstherLi.vcxproj -> C:\Users\Esther\Desktop\CS31\Project3EstherLi\Debug\Project3EstherLi.exe

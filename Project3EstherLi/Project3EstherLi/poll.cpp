@@ -28,12 +28,14 @@ int tallySeats(string pollData, char party, int& seatTally);
 int main()
 {
 	assert(hasProperSyntax("")); //empty string
-	assert(hasProperSyntax("CA")); //just state code
+	assert(!hasProperSyntax(",")); //consists of only ','
+	assert(hasProperSyntax("CA")); //consists of only a state code
 	assert(hasProperSyntax("CT5D")); //has a number with 1 digit
 	assert(hasProperSyntax("CT52D")); //has a number with 2 digits
 	assert(!hasProperSyntax("CT150D")); //has a number with 3 digits
 	assert(!hasProperSyntax("C5D")); //incorrect state code
 	assert(!hasProperSyntax("CT5D,")); //ends with ','
+	assert(!hasProperSyntax("CA,,NY")); //has 2 consecutive ','
 	assert(!hasProperSyntax("CT5D.NY")); //replaces ',' with '.'
 	assert(!hasProperSyntax("CT5DNY9R17D1I")); //missing ','
 	assert(!hasProperSyntax("CT5D, NY9R")); //has a space 
@@ -56,6 +58,9 @@ int main()
 	assert(tallySeats("NE2R,CA5R17D1I,ga13r05D", 'R', seats) == 0 && seats == 20);
 	assert(tallySeats("", 'D', seats) == 0 && seats == 0); //empty string
 	assert(tallySeats("LA01D,NY9R17D1I,VT,ne3r", 'D', seats) == 0 && seats == 18); //has a number with first digit 0
+	assert(hasProperSyntax("MA9D,KS4R") && hasProperSyntax("KS4R,MA9D")); //reversed order of forecasts
+	assert(hasProperSyntax("MA9D,,KS4R") == hasProperSyntax("KS4R,,MA9D")); //has 2 consecutive ','
+
 	cerr << "All tests succeeded" << endl;
 }
 
@@ -110,7 +115,7 @@ int tallySeats(string pollData, char party, int& seatTally) {
 
 		int i = pollData.size() - 1; //begins checking from last character
 		seatTally = 0;
-		while (i > 2) { //prevents undefined behavior
+		while (i > 2) { //prevents undefined behavior from i being out-of-bounds
 			if (pollData[i] == party) {
 				int j = i - 1;
 				while (!isalpha(pollData[j - 1])) {
