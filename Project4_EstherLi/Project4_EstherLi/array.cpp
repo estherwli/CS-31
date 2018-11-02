@@ -10,6 +10,8 @@ int positionOfMax(const string a[], int n);
 int rotateLeft(string a[], int n, int pos);
 int countRuns(const string a[], int n);
 int flip(string a[], int n);
+int differ(const string a1[], int n1, const string a2[], int n2);
+int subsequence(const string a1[], int n1, const string a2[], int n2);
 
 int main() {
 	string people[9] = { "rachel", "monica", "", "phoebe", "joey", "joey", "chandler", "ross", "janice" };
@@ -45,8 +47,8 @@ int main() {
 	assert(rotateLeft(office, 2, 0) == 0 && office[0] == "dwight" && office[1] == "michael"); //2 elements of interest
 
 	string avengers[10] = { "ironman", "ironman", "thor", "captain", "hulk", "blackwidow", "ironman", "hawkeye", "hawkeye", "Hulk" };
-	assert(countRuns(avengers, 0) == 0); //0 elements of interest
 	assert(countRuns(avengers, -2) == -1); //invalid argument: negative elements of interest
+	assert(countRuns(avengers, 0) == 0); //0 elements of interest
 	assert(countRuns(avengers, 1) == 1); //array with 1 element of interest
 	assert(countRuns(avengers, 2) == 1); //array with a sequence of 2 consecutive identical items 
 	assert(countRuns(avengers, 3) == 2);//array with 2 consecutive identical items followed by a different item
@@ -57,6 +59,41 @@ int main() {
 
 
 	/* assert(countRuns(empty, 5) == 0); //empty array with no elements of interest */
+
+	string gossipGirl[5] = { "serena", "blair", "nate", "chuck", "dan" };
+	string amigos[6] = { "rachel", "monica", "phoebe", "chandler", "joey", "ross" };
+	assert(flip(gossipGirl, -1) == -1); //invalid argument: negative elements of interest
+	assert(flip(gossipGirl, 0) == 0); //0 elements of interest
+	assert(flip(gossipGirl, 1) == 1 && gossipGirl[0] == "serena"); //1 element of interest
+	assert(flip(gossipGirl, 5) == 5 && gossipGirl[0] == "dan", "chuck", "nate", "blair", "serena"); //array with odd elements of interest
+	assert(flip(amigos, 6) == 6 && amigos[0] == "ross" && amigos[1] == "joey" && amigos[2] == "chandler" && amigos[3] == "phoebe"
+		&& amigos[4] == "monica" && amigos[5] == "rachel"); //array with even elements of interest
+	assert(flip(noFriends, 1) == 1 && noFriends[0] == "gunther"); //array with only 1 element
+	assert(flip(empty, 5) == 5); //empty array with no elements of interest
+
+	string strange[5] = { "mike", "will", "dustin", "caleb", "eleven" };
+	string stranger[6] = { "mike", "will", "dustin", "max", "caleb", "eleven" };
+	assert(differ(strange, -2, stranger, 5) == -1); //invalid argument: one of the arrays has negative elements of interest
+	assert(differ(strange, 4, stranger, -2) == -1); //invalid argument: one of the arrays has negative elements of interest
+	assert(differ(strange, 0, stranger, 0) == 0); //0 elements of interest in both arrays
+	assert(differ(strange, 0, stranger, 1) == 0); //0 elements of interest in one of the arrays
+	assert(differ(strange, 1, stranger, 0) == 0); //0 elements of interest in one of the arrays
+	assert(differ(strange, 1, stranger, 1) == 1); //2 arrays with 1 element of interest that do not differ
+	assert(differ(strange, 2, stranger, 4) == 2); //1 array runs out before differing from the other array
+	assert(differ(strange, 5, stranger, 6) == 3); //2 arrays of different sizes with differing elements
+
+	string marvel[6] = { "drstrange", "quicksilver", "loki", "thanos", "killmonger", "scarletwitch" };
+	string marvel2[8] = { "drstrange", "quicksilver", "loki", "thanos", "loki", "thanos", "killmonger", "scarletwitch" };
+	string villains[3] = { "loki", "thanos", "killmonger" };
+	assert(subsequence(marvel, -2, villains, 2) == -1); //invalid argument: one of the arrays has negative elements of interest
+	assert(subsequence(marvel, 2, villains, -2) == -1); //invalid argument: one of the arrays has negative elements of interest
+	assert(subsequence(marvel, 2, villains, 3) == -1); //n1 < n2, impossible to have subsequence a2 in a1
+	assert(subsequence(marvel, 0, villains, 2) == -1); //0 elements of interest in one of the arrays
+	assert(subsequence(marvel, 2, villains, 0) == 0); //0 elements of interest in a2; 0 elements is a subsequence of any sequence
+	assert(subsequence(marvel, 6, villains, 3) == 2); //a2 subsequence is found in the elements of interest in a1
+	assert(subsequence(marvel, 4, villains, 3) == -1); //a2 subsequence is not found in the elements of interest in a1
+	assert(subsequence(marvel2, 8, villains, 3) == 4); //part of a2 is found in a1 before the entire a2 subsequence is found in a1
+
 
 	cerr << "All tests passed.";
 }
@@ -119,8 +156,48 @@ int flip(string a[], int n) {
 		return -1;
 	for (int i = 0, j = n - 1; i < j; i++, j--) {
 		string temp = a[i];
-
-
+		a[i] = a[j];
+		a[j] = temp;
 	}
+	return n;
 }
+
+int differ(const string a1[], int n1, const string a2[], int n2) {
+	if (n1 < 0 || n2 < 0)
+		return -1;
+	int index = 0;
+	for (int i = 0, j = 0; i < n1 && j < n2; i++, j++) {
+		if (a1[i] == a2[j])
+			index++;
+	}
+	return index;
+}
+
+int subsequence(const string a1[], int n1, const string a2[], int n2) {
+	if (n1 < 0 || n2 < 0 || n1 < n2)
+		return -1;
+	if (n2 == 0)
+		return 0;
+	int index = -1;
+	for (int i = 0, j = 0; i < n1; i++) {
+		if (a1[i] == a2[j]) {
+			index = i;
+			while (a1[i] == a2[j]) {
+				if (j == n2 - 1)
+					return index;
+				if (i == n1 - 1)
+					return -1;
+				i++;
+				j++;
+			}
+			i--;
+		}
+		j = 0;
+		index = -1;
+	}
+	return -1;
+}
+
+
+
 
