@@ -12,6 +12,8 @@ int countRuns(const string a[], int n);
 int flip(string a[], int n);
 int differ(const string a1[], int n1, const string a2[], int n2);
 int subsequence(const string a1[], int n1, const string a2[], int n2);
+int lookupAny(const string a1[], int n1, const string a2[], int n2);
+int divide(string a[], int n, string divider);
 
 int main() {
 	string people[9] = { "rachel", "monica", "", "phoebe", "joey", "joey", "chandler", "ross", "janice" };
@@ -21,7 +23,6 @@ int main() {
 		&& people[1] == "monica!!!" && people[2] == "!!!"); //appends "!!!" to the first 2 elements of the array
 
 	string friends[9] = { "rachel", "monica", "", "phoebe", "joey", "chandler", "ross", "ross", "janice" };
-
 	assert(lookup(friends, -2, "rachel") == -1); //invalid argument: negative elements of interest
 	assert(lookup(friends, 0, "rachel") == -1); //0 elements of interest
 	assert(lookup(friends, 2, "monica") == 1); //looks up an item that exists in the first 2 elements of the array
@@ -87,12 +88,33 @@ int main() {
 	string villains[3] = { "loki", "thanos", "killmonger" };
 	assert(subsequence(marvel, -2, villains, 2) == -1); //invalid argument: one of the arrays has negative elements of interest
 	assert(subsequence(marvel, 2, villains, -2) == -1); //invalid argument: one of the arrays has negative elements of interest
-	assert(subsequence(marvel, 2, villains, 3) == -1); //n1 < n2, impossible to have subsequence a2 in a1
-	assert(subsequence(marvel, 0, villains, 2) == -1); //0 elements of interest in one of the arrays
+	assert(subsequence(marvel, 2, villains, 3) == -1); //n1 < n2, thus impossible to have subsequence a2 in a1
+	assert(subsequence(marvel, 0, villains, 2) == -1); //0 elements of interest in a1, thus impossible to have subsequence a2 in a1
 	assert(subsequence(marvel, 2, villains, 0) == 0); //0 elements of interest in a2; 0 elements is a subsequence of any sequence
 	assert(subsequence(marvel, 6, villains, 3) == 2); //a2 subsequence is found in the elements of interest in a1
 	assert(subsequence(marvel, 4, villains, 3) == -1); //a2 subsequence is not found in the elements of interest in a1
 	assert(subsequence(marvel2, 8, villains, 3) == 4); //part of a2 is found in a1 before the entire a2 subsequence is found in a1
+
+	string pokemon[10] = { "jolteon", "snorlax", "squirtle", "pikachu", "bulbasaur", "bulbasaur", "jigglypuff" };
+	string eeveelutions[10] = { "glaceon", "flareon", "umbreon", "espeon", "vaporeon", "jolteon", "sylveon", "leafon" };
+	string starter[10] = { "charmander", "bulbasaur", "squirtle" };
+	assert(lookupAny(pokemon, -2, starter, 3) == -1); //invalid argument: one of the arrays has negative elements of interest
+	assert(lookupAny(pokemon, 1, starter, -2) == -1); //invalid argument: one of the arrays has negative elements of interest
+	assert(lookupAny(pokemon, 0, starter, 3) == -1); //0 elements of interest in a1, thus impossible to find an element that matches one in a2
+	assert(lookupAny(pokemon, 3, starter, 3) == 2); //1 element in a2 is found in a1  
+	assert(lookupAny(pokemon, 6, starter, 3) == 2);  //more than 1 element in a2 is found in a1, should return index of first match
+	assert(lookupAny(pokemon, 6, starter, 2) == 4); //2 identical elements in a1 match an element in a2, should return index of first match
+	assert(lookupAny(pokemon, 6, eeveelutions, 3) == -1); //1 element in a1 matches one element in a2, but is not within a2's elements of interest 
+	assert(lookupAny(eeveelutions, 7, starter, 3) == -1); //0 elements in a1 match any element in a2
+
+	string food[10] = { "bplate", "feast", "covel", "cafe1919", "bcafe", "rendevous", "thestudy" };
+	assert(divide(food, -2, "feast") == -1); //invalid argument: negative elements of interest
+	assert(divide(food, 0, "feast") == 0); //0 elements of interest
+	assert(divide(food, 6, "westwood") == 6); //all elements in the array are < divider
+	assert(divide(food, 6, "ackerman") == 0); //all elements in the array are not < divider
+	assert(divide(food, 6, "bcafe") == 0); //array has one element that is not < divider
+	assert(divide(food, 6, "feast") == 4); //divider has a match in the array, and array has more than one element that is not < divider
+	assert(divide(food, 6, "deneve") == 4); //divider does not have a match in the array, but array has elements that are not < divider
 
 
 	cerr << "All tests passed.";
@@ -197,6 +219,41 @@ int subsequence(const string a1[], int n1, const string a2[], int n2) {
 	}
 	return -1;
 }
+
+int lookupAny(const string a1[], int n1, const string a2[], int n2) {
+	if (n1 < 0 || n2 < 0)
+		return -1;
+	for (int i = 0; i < n1; i++) {
+		for (int j = 0; j < n2; j++) {
+			if (a1[i] == a2[j])
+				return i;
+		}
+	}
+	return -1;
+}
+
+int divide(string a[], int n, string divider) {
+	if (n < 0)
+		return -1;
+	for (int i = 0; i < n; i++) {
+		if (a[i] >= divider) {
+			for (int j = i; j < n; j++) {
+				if (a[j] < divider) {
+					string temp = a[i];
+					a[i] = a[j];
+					a[j] = temp;
+				}
+			}
+		}  
+	}
+	for (int i = 0; i < n; i++) {
+		if (a[i] >= divider)
+			return i;
+	}
+	return n;
+}
+
+
 
 
 
