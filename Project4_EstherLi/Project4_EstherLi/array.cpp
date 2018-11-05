@@ -29,7 +29,7 @@ int main() {
 	assert(lookup(friends, 9, "ross") == 6); //looks up an item that appears more than once in the array
 	assert(lookup(friends, 2, "joey") == -1); //looks up an item that exists in the array but not in the elements specified
 	assert(lookup(friends, 2, "gunther") == -1); //looks up an item that does not exist in the array
-
+	
 	string noFriends[1] = { "gunther" };
 	string empty[5] = {};
 	assert(positionOfMax(friends, -2) == -1); //invalid argument: negative elements of interest
@@ -59,7 +59,7 @@ int main() {
 	/**************************************ASK ABOUT THIS BEFORE U TURN IT IN ***********************************************************************/
 
 
-	/* assert(countRuns(empty, 5) == 0); //empty array with no elements of interest */
+	/* assert(countRuns(empty, 5) == 0); //valid array with no initialized elements  */
 
 	string gossipGirl[5] = { "serena", "blair", "nate", "chuck", "dan" };
 	string amigos[6] = { "rachel", "monica", "phoebe", "chandler", "joey", "ross" };
@@ -90,6 +90,7 @@ int main() {
 	assert(subsequence(marvel, 2, villains, -2) == -1); //invalid argument: one of the arrays has negative elements of interest
 	assert(subsequence(marvel, 2, villains, 3) == -1); //n1 < n2, thus impossible to have subsequence a2 in a1
 	assert(subsequence(marvel, 0, villains, 2) == -1); //0 elements of interest in a1, thus impossible to have subsequence a2 in a1
+	assert(subsequence(marvel, 0, villains, 0) == 0); //0 elements of interest in a1 and a2; 0 elements is a subsequence of any sequence
 	assert(subsequence(marvel, 2, villains, 0) == 0); //0 elements of interest in a2; 0 elements is a subsequence of any sequence
 	assert(subsequence(marvel, 6, villains, 3) == 2); //a2 subsequence is found in the elements of interest in a1
 	assert(subsequence(marvel, 4, villains, 3) == -1); //a2 subsequence is not found in the elements of interest in a1
@@ -196,8 +197,6 @@ int differ(const string a1[], int n1, const string a2[], int n2) {
 }
 
 int subsequence(const string a1[], int n1, const string a2[], int n2) {
-	if (n1 < 0 || n2 < 0 || n1 < n2)
-		return -1;
 	if (n2 == 0)
 		return 0;
 	int index = -1;
@@ -221,8 +220,6 @@ int subsequence(const string a1[], int n1, const string a2[], int n2) {
 }
 
 int lookupAny(const string a1[], int n1, const string a2[], int n2) {
-	if (n1 < 0 || n2 < 0)
-		return -1;
 	for (int i = 0; i < n1; i++) {
 		for (int j = 0; j < n2; j++) {
 			if (a1[i] == a2[j])
@@ -235,22 +232,23 @@ int lookupAny(const string a1[], int n1, const string a2[], int n2) {
 int divide(string a[], int n, string divider) {
 	if (n < 0)
 		return -1;
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < n; i++) { //looks for elements >= divider and swaps with elements < divider
 		if (a[i] >= divider) {
-			for (int j = i; j < n; j++) {
+			for (int j = i + 1; j < n; j++) {
 				if (a[j] < divider) {
 					string temp = a[i];
 					a[i] = a[j];
 					a[j] = temp;
+					break;
 				}
 			}
-		}  
+		}
 	}
-	for (int i = 0; i < n; i++) {
+	for (int i = 0; i < n; i++) { //looks for first element that is >= divider
 		if (a[i] >= divider)
 			return i;
 	}
-	return n;
+	return n; //if no element >= divider, return n
 }
 
 
