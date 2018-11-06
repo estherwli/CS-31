@@ -29,9 +29,9 @@ int main() {
 	assert(lookup(friends, 9, "ross") == 6); //looks up an item that appears more than once in the array
 	assert(lookup(friends, 2, "joey") == -1); //looks up an item that exists in the array but not in the elements specified
 	assert(lookup(friends, 2, "gunther") == -1); //looks up an item that does not exist in the array
-	
+
 	string noFriends[1] = { "gunther" };
-	string empty[5] = {};  
+	string empty[5] = {};
 	string empty2[4] = {};
 	assert(positionOfMax(friends, -2) == -1); //invalid argument: negative elements of interest
 	assert(positionOfMax(friends, 0) == -1); //0 elements of interest
@@ -64,7 +64,7 @@ int main() {
 	assert(flip(gossipGirl, -1) == -1); //invalid argument: negative elements of interest
 	assert(flip(gossipGirl, 0) == 0); //0 elements of interest
 	assert(flip(gossipGirl, 1) == 1 && gossipGirl[0] == "serena"); //1 element of interest
-	assert(flip(gossipGirl, 5) == 5 && gossipGirl[0] == "dan" && gossipGirl[1] == "chuck" && 
+	assert(flip(gossipGirl, 5) == 5 && gossipGirl[0] == "dan" && gossipGirl[1] == "chuck" &&
 		gossipGirl[2] == "nate" && gossipGirl[3] == "blair" && gossipGirl[4] == "serena"); //array with odd elements of interest
 	assert(flip(amigos, 6) == 6 && amigos[0] == "ross" && amigos[1] == "joey" && amigos[2] == "chandler" && amigos[3] == "phoebe"
 		&& amigos[4] == "monica" && amigos[5] == "rachel"); //array with even elements of interest
@@ -124,6 +124,7 @@ int main() {
 }
 
 
+
 int appendToAll(string a[], int n, string value) {
 	if (n < 0)
 		return -1;
@@ -155,13 +156,13 @@ int positionOfMax(const string a[], int n) {
 }
 
 int rotateLeft(string a[], int n, int pos) {
-	if (n < 0 || pos < 0 || n <= pos) //invalid arguments
+	if (n < 0 || pos < 0 || n <= pos) //return -1 for invalid arguments
 		return -1;
-	string temp = a[pos];
+	string temp = a[pos]; //stores the string at pos
 	int i;
 	for (i = pos; i < n - 1; i++) //begins at pos, shift each element of interest 1 position to the left
 		a[i] = a[i + 1];
-	a[i] = temp;
+	a[i] = temp; //makes last element the original string at pos
 	return pos;
 }
 
@@ -182,9 +183,9 @@ int flip(string a[], int n) {
 	if (n < 0)
 		return -1;
 	for (int i = 0, j = n - 1; i < j; i++, j--) { //two variables that iterate through the array starting from opposite ends 
-		string temp = a[i]; //swaps elements to the other end of the array
+		string temp = a[i]; 
 		a[i] = a[j];
-		a[j] = temp;
+		a[j] = temp; //swaps elements to the other end of the array
 	}
 	return n;
 }
@@ -194,7 +195,7 @@ int differ(const string a1[], int n1, const string a2[], int n2) {
 		return -1;
 	int index = 0; //assume the first element differs
 	for (int i = 0, j = 0; i < n1 && j < n2; i++, j++) { //iterate through both arrays 
-		if (a1[i] == a2[j]) 
+		if (a1[i] == a2[j])
 			index++; //increment index if both arrays' elements at the same position are equal
 	}
 	return index;
@@ -202,29 +203,27 @@ int differ(const string a1[], int n1, const string a2[], int n2) {
 
 int subsequence(const string a1[], int n1, const string a2[], int n2) {
 	if (n2 == 0)
-		return 0;
-	int index = -1;
-	for (int i = 0, j = 0; i < n1; i++) {
+		return 0; //0 elements is a valid subsequence of any sequence
+	for (int i = 0; i < n1;) {
+		int j = 0;
+		int index = -1; //index marks the element in a1 that begins the a2 subsequence  
 		if (a1[i] == a2[j]) {
 			index = i;
-			while (a1[i] == a2[j]) {
-				if (j == n2 - 1)
+			for (; a1[i] == a2[j]; i++, j++) { //if first element of a2 matches an element in a1
+				if (j == n2 - 1) //if all elements in a2 are consecutively found in a1
 					return index;
-				if (i == n1 - 1)
+				if (i == n1 - 1) //if a1 elements runs out before a2
 					return -1;
-				i++;
-				j++;
 			}
-			i--;
 		}
-		j = 0;
-		index = -1;
+		else
+			i++; //prevents i from being incremented twice 
 	}
-	return -1;
+	return -1; //subsequence not found, n1 < 0, or n2 < 0
 }
 
 int lookupAny(const string a1[], int n1, const string a2[], int n2) {
-	for (int i = 0; i < n1; i++) { 
+	for (int i = 0; i < n1; i++) {
 		for (int j = 0; j < n2; j++) { //iterate through a2 to check if any element matches an element in a1
 			if (a1[i] == a2[j])
 				return i; //if match is found, return position of such element in a1
