@@ -31,20 +31,22 @@ int main() {
 	assert(lookup(friends, 2, "gunther") == -1); //looks up an item that does not exist in the array
 	
 	string noFriends[1] = { "gunther" };
-	string empty[5] = {};
+	string empty[5] = {};  
+	string empty2[4] = {};
 	assert(positionOfMax(friends, -2) == -1); //invalid argument: negative elements of interest
 	assert(positionOfMax(friends, 0) == -1); //0 elements of interest
 	assert(positionOfMax(friends, 4) == 0); //looks for a max string that appears once in the first 4 elements of the array
 	assert(positionOfMax(friends, 9) == 6); //looks for a max string that appears twice in the array
 	assert(positionOfMax(noFriends, 1) == 0); //looks for a max string in an array with only 1 element
-	assert(positionOfMax(empty, 5) == -1); //empty array with no elements of interest
+	assert(positionOfMax(empty, 5) == 0); //empty array 
 
 	string office[6] = { "michael", "jim", "dwight", "pam", "toby", "angela" };
 	assert(rotateLeft(office, -1, 0) == -1); //invalid argument: negative elements of interest
 	assert(rotateLeft(office, 0, -1) == -1); //invalid argument: negative array element
+	assert(rotateLeft(office, 2, 2) == -1); //invalid argument: position is greater than elements of interest
 	assert(rotateLeft(office, 6, 1) == 1 && office[0] == "michael" && office[1] == "dwight" && office[2] == "pam" && office[3] == "toby"
 		&& office[4] == "angela" && office[5] == "jim"); //moves second element to last position, shifts every element after the second position left
-	assert(rotateLeft(office, 0, 0) == 0 && office[0] == "michael"); //0 elements of interest
+	assert(rotateLeft(office, 0, 0) == -1 && office[0] == "michael"); //0 elements of interest
 	assert(rotateLeft(office, 2, 0) == 0 && office[0] == "dwight" && office[1] == "michael"); //2 elements of interest
 
 	string avengers[10] = { "ironman", "ironman", "thor", "captain", "hulk", "blackwidow", "ironman", "hawkeye", "hawkeye", "Hulk" };
@@ -55,18 +57,15 @@ int main() {
 	assert(countRuns(avengers, 3) == 2);//array with 2 consecutive identical items followed by a different item
 	assert(countRuns(avengers, 7) == 6); //array with 2 consecutive identical items followed by 4 different items, and an item identical to the first 2
 	assert(countRuns(avengers, 10) == 8); //array of 10 elements with 2 sequences of 2 consecutive identical items
-
-	/**************************************ASK ABOUT THIS BEFORE U TURN IT IN ***********************************************************************/
-
-
-	/* assert(countRuns(empty, 5) == 0); //valid array with no initialized elements  */
+	assert(countRuns(empty, 5) == 1); //array with uninitialized elements only contains empty strings 
 
 	string gossipGirl[5] = { "serena", "blair", "nate", "chuck", "dan" };
 	string amigos[6] = { "rachel", "monica", "phoebe", "chandler", "joey", "ross" };
 	assert(flip(gossipGirl, -1) == -1); //invalid argument: negative elements of interest
 	assert(flip(gossipGirl, 0) == 0); //0 elements of interest
 	assert(flip(gossipGirl, 1) == 1 && gossipGirl[0] == "serena"); //1 element of interest
-	assert(flip(gossipGirl, 5) == 5 && gossipGirl[0] == "dan", "chuck", "nate", "blair", "serena"); //array with odd elements of interest
+	assert(flip(gossipGirl, 5) == 5 && gossipGirl[0] == "dan" && gossipGirl[1] == "chuck" && 
+		gossipGirl[2] == "nate" && gossipGirl[3] == "blair" && gossipGirl[4] == "serena"); //array with odd elements of interest
 	assert(flip(amigos, 6) == 6 && amigos[0] == "ross" && amigos[1] == "joey" && amigos[2] == "chandler" && amigos[3] == "phoebe"
 		&& amigos[4] == "monica" && amigos[5] == "rachel"); //array with even elements of interest
 	assert(flip(noFriends, 1) == 1 && noFriends[0] == "gunther"); //array with only 1 element
@@ -83,8 +82,8 @@ int main() {
 	assert(differ(strange, 2, stranger, 4) == 2); //1 array runs out before differing from the other array
 	assert(differ(strange, 5, stranger, 6) == 3); //2 arrays of different sizes with differing elements
 
-	string marvel[6] = { "drstrange", "quicksilver", "loki", "thanos", "killmonger", "scarletwitch" };
-	string marvel2[8] = { "drstrange", "quicksilver", "loki", "thanos", "loki", "thanos", "killmonger", "scarletwitch" };
+	string marvel[6] = { "drstrange", "quicksilver", "loki", "thanos", "killmonger", "spiderman" };
+	string marvel2[8] = { "drstrange", "quicksilver", "loki", "thanos", "loki", "thanos", "killmonger", "spiderman" };
 	string villains[3] = { "loki", "thanos", "killmonger" };
 	assert(subsequence(marvel, -2, villains, 2) == -1); //invalid argument: one of the arrays has negative elements of interest
 	assert(subsequence(marvel, 2, villains, -2) == -1); //invalid argument: one of the arrays has negative elements of interest
@@ -102,11 +101,15 @@ int main() {
 	assert(lookupAny(pokemon, -2, starter, 3) == -1); //invalid argument: one of the arrays has negative elements of interest
 	assert(lookupAny(pokemon, 1, starter, -2) == -1); //invalid argument: one of the arrays has negative elements of interest
 	assert(lookupAny(pokemon, 0, starter, 3) == -1); //0 elements of interest in a1, thus impossible to find an element that matches one in a2
+	assert(lookupAny(pokemon, 3, starter, 0) == -1); //0 elements of interest in a2, thus impossible to find an element that matches one in a2
+	assert(lookupAny(pokemon, 0, starter, 0) == -1); //0 elements of interest in a1 and a2
 	assert(lookupAny(pokemon, 3, starter, 3) == 2); //1 element in a2 is found in a1  
 	assert(lookupAny(pokemon, 6, starter, 3) == 2);  //more than 1 element in a2 is found in a1, should return index of first match
 	assert(lookupAny(pokemon, 6, starter, 2) == 4); //2 identical elements in a1 match an element in a2, should return index of first match
 	assert(lookupAny(pokemon, 6, eeveelutions, 3) == -1); //1 element in a1 matches one element in a2, but is not within a2's elements of interest 
 	assert(lookupAny(eeveelutions, 7, starter, 3) == -1); //0 elements in a1 match any element in a2
+	assert(lookupAny(empty, 5, empty2, 4) == 0); //2 uninitialized arrays should have empty strings that match
+	assert(lookupAny(friends, 9, empty, 5) == 2); //empty string in a1 should match uninitialized element in a2
 
 	string food[10] = { "bplate", "feast", "covel", "cafe1919", "bcafe", "rendevous", "thestudy" };
 	assert(divide(food, -2, "feast") == -1); //invalid argument: negative elements of interest
@@ -116,7 +119,6 @@ int main() {
 	assert(divide(food, 6, "bcafe") == 0); //array has one element that is not < divider
 	assert(divide(food, 6, "feast") == 4); //divider has a match in the array, and array has more than one element that is not < divider
 	assert(divide(food, 6, "deneve") == 4); //divider does not have a match in the array, but array has elements that are not < divider
-
 
 	cerr << "All tests passed.";
 }
@@ -135,15 +137,17 @@ int lookup(const string a[], int n, string target) {
 		if (a[i] == target)
 			return i;
 	}
-	return -1;
+	return -1; //if n <= 0 or match is not found, return -1
 }
 
 int positionOfMax(const string a[], int n) {
-	string max = "";
-	int index = -1;
-	for (int i = 0; i < n; i++) { //iterates through each element of interest and compares it to the max string
+	if (n <= 0) //negative or zero interesting elements
+		return -1;
+	string max = a[0];
+	int index = 0;
+	for (int i = 1; i < n; i++) { //iterates through each element of interest and compares it to the max string
 		if (a[i] > max) {
-			max = a[i]; //if current element > max string, it becomes the max string
+			max = a[i]; //if current string > max string, it is now stored as the max string
 			index = i; //stores index of max string
 		}
 	}
@@ -151,7 +155,7 @@ int positionOfMax(const string a[], int n) {
 }
 
 int rotateLeft(string a[], int n, int pos) {
-	if (n < 0 || pos < 0) //invalid arguments
+	if (n < 0 || pos < 0 || n <= pos) //invalid arguments
 		return -1;
 	string temp = a[pos];
 	int i;
@@ -167,8 +171,8 @@ int countRuns(const string a[], int n) {
 	if (n == 0)
 		return 0;
 	int count = 1; //first element always counts as a run
-	for (int i = 1; i < n; i++) { //begins at position 1 to avoid bounds error in the if statement
-		if (a[i] != a[i - 1]) //if next element is not identical to current element
+	for (int i = 0; i < n - 1; i++) { //begins at position 1 to avoid bounds error in the if statement
+		if (a[i] != a[i + 1]) //if next element is not identical to current element
 			count++;
 	}
 	return count;
@@ -177,8 +181,8 @@ int countRuns(const string a[], int n) {
 int flip(string a[], int n) {
 	if (n < 0)
 		return -1;
-	for (int i = 0, j = n - 1; i < j; i++, j--) {
-		string temp = a[i];
+	for (int i = 0, j = n - 1; i < j; i++, j--) { //two variables that iterate through the array starting from opposite ends 
+		string temp = a[i]; //swaps elements to the other end of the array
 		a[i] = a[j];
 		a[j] = temp;
 	}
@@ -186,12 +190,12 @@ int flip(string a[], int n) {
 }
 
 int differ(const string a1[], int n1, const string a2[], int n2) {
-	if (n1 < 0 || n2 < 0)
+	if (n1 < 0 || n2 < 0) //either array has negative interesting elements
 		return -1;
-	int index = 0;
-	for (int i = 0, j = 0; i < n1 && j < n2; i++, j++) {
-		if (a1[i] == a2[j])
-			index++;
+	int index = 0; //assume the first element differs
+	for (int i = 0, j = 0; i < n1 && j < n2; i++, j++) { //iterate through both arrays 
+		if (a1[i] == a2[j]) 
+			index++; //increment index if both arrays' elements at the same position are equal
 	}
 	return index;
 }
@@ -220,23 +224,23 @@ int subsequence(const string a1[], int n1, const string a2[], int n2) {
 }
 
 int lookupAny(const string a1[], int n1, const string a2[], int n2) {
-	for (int i = 0; i < n1; i++) {
-		for (int j = 0; j < n2; j++) {
+	for (int i = 0; i < n1; i++) { 
+		for (int j = 0; j < n2; j++) { //iterate through a2 to check if any element matches an element in a1
 			if (a1[i] == a2[j])
-				return i;
+				return i; //if match is found, return position of such element in a1
 		}
 	}
-	return -1;
+	return -1; //no element in a1 matchs any element in a2
 }
 
 int divide(string a[], int n, string divider) {
 	if (n < 0)
 		return -1;
-	for (int i = 0; i < n; i++) { //looks for elements >= divider and swaps with elements < divider
+	for (int i = 0; i < n; i++) { //iterate through array to look for elements >= divider 
 		if (a[i] >= divider) {
 			for (int j = i + 1; j < n; j++) {
 				if (a[j] < divider) {
-					string temp = a[i];
+					string temp = a[i]; //swaps elements >= divider with elements < divider
 					a[i] = a[j];
 					a[j] = temp;
 					break;

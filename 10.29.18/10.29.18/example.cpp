@@ -103,7 +103,7 @@ finding standard deviation of scores DOES require an array (bc SD requires mean 
 double computeMean(const int a[], int n); //the prototype
 void setFirst(int a[], int n, int value);
 
-int main() {
+void scores2() {
 	const int MAX_NUMBER_OF_SCORES = 10000;
 	int scores[MAX_NUMBER_OF_SCORES];
 	int nScores = 0;
@@ -170,7 +170,10 @@ if (t < s) //directional comparison: Ghost == Ghost, Ghost < Ghoul, Ghost < Ghos
 C strings
 =========
 
+#define _CRT_SECURE_NO_WARNINGS //this line must come BEFORE #include; stops the warnings about strcpy and strcat 
 #include <cstring>
+
+cstrings are simply char arrays
 
 char t[10] = {'G', 'h', 'o', 's', 't'}; //allowed to put fewer initializers than number of elements in the array
 char t[10] = "Ghost"; //valid way to initialize C array
@@ -195,7 +198,94 @@ cin.getline(char[], int) //creates new array that can hold int elements
 cin.getline(s, 100); //won't be tested on an input string longer than the length of array
 '\0' must be the last character, so user can only type 99 characters to store in s
 
-s = t; //error! arrays CANNOT be assigned; need a loop that assigns character by character until it gets to '\0'
+strcat(cstring original, cstring b concatenate);
+strcat(s, "!!!"); //s is now "Ghost!!!"
+
+s = t; //error! arrays CANNOT be assigned; need a loop that assigns character by character until it gets to '\0' OR strcpy()
+
+strcpy(cstring destination, cstring source); //copies one cstring's array elements into another cstring
+strcpy(s, t);  //destination array must be big enough to hold what's being copied
+strcpy(t, "abcdefghij"); //INVALID bc t does not have enough space
+
+strcmp(cstring a, cstring b); //returns an int 
+								negative if a comes before b
+								0 if a is equal to b
+								positive if a comes after b
+
+Does a come before b?
+	if(t < s) //compiles, but doesn't do what you want --> use strcmp(cstring a, cstring b)
+	if (strcmp(t, s) < 0) //VALID 
+
+Does a equal b?
+	if (strcmp(a, b)) //INVALID because strcmp() returns an int, not bool (always opposite result: 0 --> false, nonzero --> true)
+	if (strcmp(a, b) == 0) //VALID
+
+C++ strings: a OPERATOR b
+C string:    strcmp(a, b) OPERATOR 0
+
+
+void f(const char cs[]) {...}
+
+int main() {
+	string s = "Hello";
+	f(s); //won't compile bc s is a C++ string, not a C string
+	f(s.c_str()); //valid
+
+	char t[10] = "Ghost";
+	s = t; //s is now "Ghost"
+
+	s = "Wow";
+	t = s; //INVALID! won't compile
+	t = s.c_str(); //INVALID! won't compile
+	strcpy(t, s.c_str()); // valid, t is now "Wow"
+}
+
+*/
+
+int main() {
+	const int NWEEKS = 5;
+	const int NDAYS = 7;
+
+	int attendance[NWEEKS][NDAYS];
+
+	cout << attendance[2][5];
+
+	for (int w = 0; w < NWEEKS; w++) {
+		int t = 0;
+		for (int d = 0; d < NDAYS; d++) //row-by-row processing 
+			t += attendance[w][d];
+		cout << "The total for week " << w << " is " << t << endl;
+	}
+
+	const string dayNames[NDAYS] = { "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday" };
+	int grandTotal = 0;
+	for (int d = 4 /* Friday */; d < NDAYS; d++) {
+		int t = 0;
+		for (int w = 0; w < NWEEKS; w++)
+			t += attendance[w][d];
+		cout << "The total for " << dayNames[d] << " is " << t << endl;
+		grandTotal += t;
+	}
+	cout << "Over the course of " << NWEEKS << " weeks, weekend attendance was " << grandTotal << endl;
+}
+
+double computeMean(const int a[], int n);
+double meanForADay(const int a[][7], int nRows, int dayNumber);
+
+double meanForADay(const int a[][7], int nRows, int dayNumber) { //must specify remaining dimensions
+	if (nRows <= 0)
+		return 0;
+	int total = 0;
+	for (int r = 0; r < nRows; r++)
+		total += a[r][dayNumber];
+	return static_cast<double>(total) / nRows;
+}
+
+/*
+int multiplexChainAttendance[5][7][10][16]; //i have 10 multiplexes, each has 16 screen rooms
+
+passing to a function:
+void f(int b[][7][10]][16], ...)
 */
 
 
