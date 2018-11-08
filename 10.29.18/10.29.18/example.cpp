@@ -242,7 +242,7 @@ int main() {
 
 */
 
-int main() {
+void attendance() {
 	const int NWEEKS = 5;
 	const int NDAYS = 7;
 
@@ -287,6 +287,95 @@ int multiplexChainAttendance[5][7][10][16]; //i have 10 multiplexes, each has 16
 passing to a function:
 void f(int b[][7][10]][16], ...)
 */
+
+char pets[5][7] = { "cat", "mouse", "eel", "ferret", "horse" };
+
+const int MAX_WORD_LENGTH = 6;
+int countLength(const char a[][MAX_WORD_LENGTH + 1], int n, int targetLength);
+
+void main1() {
+	const int MAX_PETS = 5;
+	char pets[MAX_PETS][MAX_WORD_LENGTH + 1] = { "cat", "mouse", "eel", "ferret", "horse" };
+	cout << countLength(pets, MAX_PETS, 5); //how many 5-character strings?
+}
+
+int countLengthCSTRING(const char a[][MAX_WORD_LENGTH + 1], int n, int targetLength) {
+	int total = 0;
+	for (int k = 0; k < n; k++) {
+		if (strlen(a[k]) == targetLength) //there is no way to select an entire column
+			total++;
+	}
+	return total;
+}
+
+int countLength(const string a[], int n, int targetLength) {
+	int total = 0;
+	for (int k = 0; k < n; k++) {
+		if (a[k].size() == targetLength) //there is no way to select an entire column
+			total++;
+	}
+	return total;
+}
+
+/*
+Pointers:
+	-another way to implement passing-by-reference
+	-traverse arrays
+	-manipulate dynamic storage
+	-represent relationships in data structures
+*/
+
+void polarToCartesian(double rho, double theta, double* xx, double* yy);
+
+int main() {
+	double r;
+	double angle;
+	double x;
+	double y;
+	polarToCartesian(r, angle, &x, &y); //&x means generate a pointer to x 
+}
+
+void polarToCartesian(double rho, double theta, double* xx, double* yy) {
+	*xx = rho * cos(theta); //*xx means follow the pointer xx
+	*yy = rho * sin(theta);
+}
+
+/*	
+
+double&		means		reference-to-double			or			another name for some double
+double*		means		pointer-to-double			or			the-address-of-some-double
+&x			means		generate a pointer to x		or			address of x
+*p			means		follow the pointer p		or			the object that p points to
+
+
+double a = 3.2;
+double b = 5.1;
+double* p = &a; //valid, p gets the pointer of a
+double* q = 7.6; //INVALID 
+double d = p; //INVALID
+double d = *p //valid, *p refers to the double that p points to
+double& dd = d; //valid, dd is a reference not a pointer
+
+p = b; //INVALID 
+p = &b; //valid, assigns one pointer to another (p gets the pointer of b)
+*p = b; //valid, assigns one double to another (the object that p points to is now b)
+
+*p += 4; //*p = *p + 4
+int k = 7;
+p = &k; //INVALID because &k generates a pointer to an INT, and p is a pointer to a DOUBLE
+		//a pointer to an int cannot be converted to a pointer to a double 
+
+int* z = &k; //valid, z is an int pointer that now points to k
+
+cout << (k * b); //valid, 2 doubles
+cout << (k * p); //INVALID, can't multiply an int and a pointer 
+cout << (k * *p); //valid, double and the double that p points to
+
+
+*/
+
+
+
 
 
 
