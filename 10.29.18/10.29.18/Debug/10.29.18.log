@@ -1,2 +1,3 @@
 ﻿  example.cpp
-  10.29.18.vcxproj -> C:\Users\Esther\Desktop\CS31\10.29.18\Debug\10.29.18.exe
+example.obj : error LNK2019: unresolved external symbol "int __cdecl countLength(char const (* const)[7],int,int)" (?countLength@@YAHQAY06$$CBDHH@Z) referenced in function "void __cdecl main1(void)" (?main1@@YAXXZ)
+C:\Users\Esther\Desktop\CS31\10.29.18\Debug\10.29.18.exe : fatal error LNK1120: 1 unresolved externals

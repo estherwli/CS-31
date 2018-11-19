@@ -177,7 +177,7 @@ cstrings are simply char arrays
 
 char t[10] = {'G', 'h', 'o', 's', 't'}; //allowed to put fewer initializers than number of elements in the array
 char t[10] = "Ghost"; //valid way to initialize C array
-what t actually looks like: {'G', 'h', 'o', 's', 't', '\0}
+what t actually looks like: {'G', 'h', 'o', 's', 't', '\0'}
 
 '\0': "zero byte" encodes NUL, which marks the end of the characters of interest in a string
 
@@ -311,7 +311,7 @@ int countLengthCSTRING(const char a[][MAX_WORD_LENGTH + 1], int n, int targetLen
 int countLength(const string a[], int n, int targetLength) {
 	int total = 0;
 	for (int k = 0; k < n; k++) {
-		if (a[k].size() == targetLength) //there is no way to select an entire column
+		if (a[k].size() == targetLength) 
 			total++;
 	}
 	return total;
@@ -329,9 +329,13 @@ void polarToCartesian(double rho, double theta, double* xx, double* yy);
 
 int main() {
 	double r;
+	cin >> r;
 	double angle;
+	cin >> angle;
 	double x;
+	cin >> x;
 	double y;
+	cin >> y;
 	polarToCartesian(r, angle, &x, &y); //&x means generate a pointer to x 
 }
 
@@ -360,7 +364,7 @@ p = b; //INVALID
 p = &b; //valid, assigns one pointer to another (p gets the pointer of b)
 *p = b; //valid, assigns one double to another (the object that p points to is now b)
 
-*p += 4; //*p = *p + 4
+*p += 4; //*p = *p + 4	
 int k = 7;
 p = &k; //INVALID because &k generates a pointer to an INT, and p is a pointer to a DOUBLE
 		//a pointer to an int cannot be converted to a pointer to a double 
@@ -369,11 +373,78 @@ int* z = &k; //valid, z is an int pointer that now points to k
 
 cout << (k * b); //valid, 2 doubles
 cout << (k * p); //INVALID, can't multiply an int and a pointer 
-cout << (k * *p); //valid, double and the double that p points to
+cout << (k * *p); //valid, double multiplied by the double that p points to
+cout << (*z**P); //valid, the double that z points to multiplied by the double that p points to
+
+double* q;
+q = 4.7; //INVALID, undefined behavior because q is uninitialized
+q = p; //valid, because p is a pointer to the double b
+
+double* r = &a; 
+*r = b; //valid, the double that r points to is now b
+
+if (p == r) //FALSE bc we are comparing the pointers' memory address (p points to b, r points to a), not the doubles they point to
+if (p == q) //TRUE bc both point to the double b
+if (*p == *r) //TRUE 
+
+
+
+
+const int MAXSIZE = 5;
+double da[MAXSIZE];
+int k;
+double* dp;
+
+for (k = 0; k < MAXSIZE; k				for (dp = &da[0]; dp < &da[MAXSIZE]; dp++)					for (dp = da; dp < da + MAXSIZE; dp++)
+	da[k] = 3.6;							*dp = 3.6; //*(&da[0]) == da[0] bc *& cancel out			*dp = 3.6; //*(&da[0]) == da[0] bc *& cancel out
+
+we assigned to dp the address of da[0] (may look like an integer, but not actually type int)
+&da[MAXSIZE] is NOT out of bounds! it's a valid pointer but trying to follow that pointer leads to undefined behavior
+dp++ is valid because: 
+	dp = dp + 1;
+	dp = &da[0] + 1;
+	dp = &da[0 + 1];
+	dp = &da[1];
+
+incrementing pointers: 
+&a[i] + j ==> &a[i + j];
+&a[i] - j ==> &a[i - j];
+NOTE: machine language translation for dp++ means add 8 bytes to the address that dp contains (but we don't need to use dp +=8; compiler does it)
+
+comparing pointers: 
+&a[i] < &a[j] ==> i < j
+NOTE: don't compare 2 pointers that point to different arrays (compiler picks addresses for each array)
+
+a array pointer without an index points to the 0th element of an array:
+a <==> &a[0]
+&a[MAXSIZE] <==> a + MAXSIZE because: 
+	&a[5] 
+	&a[0 + 5]
+	&a[0] + 5
+	a + 5
+
+********************pointer algebra summary**********************
+*&x ==> x
+&a[i] + j ==> &a[i + j]
+&a[i] < &a[j] ==> i < j
+a <==> &a[0]
+p[i] ==> *(p + i)
+
+*****************************************************************
+		         v same thing as const string a[]
+int lookup(const string* a, int n, string target) {
+	... a[k] ...
+}
+int main() {
+	string sa[5] = { "cat", "mouse", "eel", "ferret", "horse" };
+	int i = lookup(sa, 5, "eel");
+	int j = lookup(&sa[0], 5, "eel");
+	int m = lookup(sa + 1, 3, "ferret");
+				    ^ same things as &sa[1]
+}
 
 
 */
-
 
 
 
