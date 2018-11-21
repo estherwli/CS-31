@@ -9,11 +9,18 @@ const int MAX_WORD_LENGTH = 20;
 const int MAX_DOC_LENGTH = 250;
 
 void makeLowercase(char arr[][MAX_WORD_LENGTH + 1], int nPatterns);
-void makeArray(const char document[], char doc[][MAX_DOC_LENGTH]);
+void makeArray(const char document[], char doc[][MAX_DOC_LENGTH + 1]);
 int makeProper(char word1[][MAX_WORD_LENGTH + 1], char word2[][MAX_WORD_LENGTH + 1], int separation[], int nPatterns);
 int rate(const char document[], const char word1[][MAX_WORD_LENGTH + 1], const char word2[][MAX_WORD_LENGTH + 1], const int separation[], int nPatterns);
+void testMakeProper();
+void testRate();
 
 int main() {
+	testMakeProper();
+	testRate();
+	cout << "All tests succeeded" << endl;
+}
+void testMakeProper() {
 	char first[][MAX_WORD_LENGTH + 1] = { "rachel", "monica", "Phoebe", "Chandler", "j0ey", "ross", "janice", "", "rachel", "green", "phoebe", "Geller" };
 	char last[][MAX_WORD_LENGTH + 1] = { "green", "geller", "Buffet", "BING!", "tr1bb1an1", "geller", "", "", "green", "RACHEL", "buffet", "ross" };
 	int separation[] = { 1, -2, 3, 4, 5, 2, 7, 0, 5, 0, 3, 2 };
@@ -29,6 +36,20 @@ int main() {
 	assert(makeProper(first, last, separation, 11) == 3); //2 patterns have the same w1 and w2 values, but they have the same separation value
 	assert(makeProper(first, last, separation, 12) == 3); //2 patterns have the same w1 and w2 values in different order
 
+	char office1[][MAX_WORD_LENGTH + 1] = { "Jim", "Pam", "Dwight", "MICHAEL" };
+	char office2[][MAX_WORD_LENGTH + 1] = { "HALPERT", "beesly", "shRuTe", "scott" };
+	int separation2[] = { 1, 0, 2, 100 };
+	assert(makeProper(office1, office2, separation2, 4) == 4); //all patterns are valid
+
+	char pll1[][MAX_WORD_LENGTH + 1] = { "emily", "hannah", "marin", "aria", "montgomery" };
+	char pll2[][MAX_WORD_LENGTH + 1] = { "field5", "marin", "marin", "montgomery", "hannah" };
+	int separation3[] = { 1, 0, 2, 251,0 };
+	assert(makeProper(pll1, pll2, separation3, 1) == 0); //0 valid patterns
+	assert(makeProper(pll1, pll2, separation3, 3) == 2); //a pattern has the same w1 and w2 values
+	assert(makeProper(pll1, pll2, separation3, 4) == 3); //a pattern has a separation value greater than maximum document length
+	assert(makeProper(pll1, pll2, separation3, 5) == 4); //a pattern shares w1 with another pattern but shares w2 with a different pattern
+}
+void testRate() {
 	char document1[MAX_DOC_LENGTH] = { "The traffic on the 405-North freeway is terrible! Right?" };
 	char w1[10][MAX_WORD_LENGTH + 1] = { "traffic", "freeway", "north", "terrible", "right" };
 	char w2[10][MAX_WORD_LENGTH + 1] = { "the", "the", "terrible", "freeway", "the" };
@@ -52,23 +73,33 @@ int main() {
 	assert(rate(document2, word1, word2, s2, 1) == 0); //looking for a pattern where w1 and w2 refer to the same word, but pattern does not exist
 	assert(rate(document3, word1, word2, s2, 4) == 0); //patterns do not exist because they only exist in a part of a word
 	assert(rate(document3, word1, word2, s2, 5) == 1); //pattern exists in more than one way in the document
-
-	cout << "All tests succeeded" << endl;
-
+	assert(rate("doo", word1, word2, s2, 5) == 0); //document only contains 1 word
+	assert(rate("doo          doo", word1, word2, s2, 5) == 1); //document contains 2 words separated by multiple spaces
+	assert(rate("doo 28DOO", word1, word2, s2, 5) == 1); //document contains 2 words separated by a space and numbers
+	assert(rate("doo-doo", word1, word2, s2, 5) == 0); //document contains words connected by a hyphen
+	assert(rate("! doo !& doo!", word1, word2, s2, 5) == 1); //document begins and ends with non-letter character 
+	assert(rate("&&&", word1, word2, s2, 5) == 0); //document only contains non-letter characters
+	assert(rate("", word1, word2, s2, 5) == 0); //document is an empty string
+	assert(rate("doooooooooooooooooooooooo doo", word1, word2, s2, 5) == 0); //document has a word with over 20 characters
+	assert(rate("doo                        doo", word1, word2, s2, 5) == 1); //document contains more than 20 spaces
 }
 
 void makeLowercase(char arr[][MAX_WORD_LENGTH + 1], int nPatterns) {
 	for (int i = 0; i < nPatterns; i++) {
 		for (int j = 0; arr[i][j] != '\0'; j++) {
 			if (isalpha(arr[i][j]))
-				arr[i][j] = tolower(arr[i][j]);
+				arr[i][j] = tolower(arr[i][j]); //changes all letter characters to lowercase
 		}
 	}
 }
 
-void makeArray(const char document[], char doc[][MAX_DOC_LENGTH]) {
-	for (int i = 0, j = 0; document[i] != '\0', j < MAX_DOC_LENGTH; j++) {
-		while (document[i] == ' ')
+void makeArray(const char document[], char doc[][MAX_DOC_LENGTH + 1]) {
+	for (int i = 0; !isalpha(document[i]); i++) {
+		if (document[i] == '\0')
+			return;
+	}
+	for (int i = 0, j = 0; document[i] != '\0' && j < MAX_DOC_LENGTH; j++) {
+		while (document[i] == ' ' || !(isalpha(document[i])))//skips to the next non-space character
 			i++;
 		for (int k = 0; document[i] != '\0' && document[i] != ' ' && k < MAX_DOC_LENGTH; i++) {
 			if (isalpha(document[i])) {
@@ -76,7 +107,7 @@ void makeArray(const char document[], char doc[][MAX_DOC_LENGTH]) {
 				k++;
 			}
 		}
-	}
+	} 
 }
 
 int makeProper(char word1[][MAX_WORD_LENGTH + 1], char word2[][MAX_WORD_LENGTH + 1], int separation[], int nPatterns) {
@@ -91,14 +122,17 @@ int makeProper(char word1[][MAX_WORD_LENGTH + 1], char word2[][MAX_WORD_LENGTH +
 			continue;
 		}
 		//if a word in the pattern contains a non-letter character 
-		for (int j = 0; word1[i][j] != '\0' && word2[i][j] != '\0'; j++) {
-			if (!isalpha(word1[i][j]) || !isalpha(word2[i][j]))
+		for (int j = 0; word1[i][j] != '\0'; j++) {
+			if (!isalpha(word1[i][j]))
 				separation[i] = -1; //marks this pattern as invalid
 		}
-
-		//if two patterns have the same w1 and w2 values in either order, remove the pattern with the lesser separation value
+		for (int j = 0; word2[i][j] != '\0'; j++) {
+			if (!isalpha(word2[i][j]))
+				separation[i] = -1; //marks this pattern as invalid
+		}
+		//if two patterns have the same w1 and w2 values in either order, mark the pattern with the lesser separation value as invalid
 		for (int k = i + 1; k < nPatterns; k++) {
-			if ((strcmp(word1[i], word1[k]) == 0 || strcmp(word1[i], word2[k]) == 0) && (strcmp(word2[i], word2[k]) == 0 || strcmp(word2[i], word1[k]) == 0)) {
+			if ((strcmp(word1[i], word1[k]) == 0 && strcmp(word2[i], word2[k]) == 0) || (strcmp(word2[i], word1[k]) == 0 && strcmp(word1[i], word2[k]) == 0)) {
 				if (separation[i] <= separation[k])
 					separation[i] = -1; //mark the patter with lesser or equal separation as invalid
 				else
@@ -132,28 +166,29 @@ int makeProper(char word1[][MAX_WORD_LENGTH + 1], char word2[][MAX_WORD_LENGTH +
 		if (separation[i] < 0) //looks for the first negative value (indicating the first invalid pattern) 
 			return i;
 	}
+	return nPatterns;
 }
 
 int rate(const char document[], const char word1[][MAX_WORD_LENGTH + 1], const char word2[][MAX_WORD_LENGTH + 1], const int separation[], int nPatterns) {
-	char doc[MAX_DOC_LENGTH][MAX_DOC_LENGTH] = {};
+	char doc[MAX_DOC_LENGTH + 1][MAX_DOC_LENGTH + 1] = {'\0'};
 	int count = 0;
-	makeArray(document, doc);
+	makeArray(document, doc); //changes document into an array of C strings
 	for (int i = 0; i < nPatterns; i++) {
 		for (int j = 0; j < MAX_DOC_LENGTH; j++) {
-			if (strcmp(word1[i], doc[j]) == 0) {
-				int temp = count;
-				for (int k = separation[i] + 1; k > 0; k--) {
-					if (j + k < MAX_DOC_LENGTH && strcmp(word2[i], doc[j + k]) == 0) {
+			if (strcmp(word1[i], doc[j]) == 0) { //if word1 matches a word in the document
+				int temp = count; //used later to check count
+				for (int k = separation[i] + 1; k > 0; k--) { //finds the boundaries set by separation value
+					if (j + k < MAX_DOC_LENGTH && strcmp(word2[i], doc[j + k]) == 0) { //if word2 comes after word1
 						count++;
 						break;
 					}
-					else if (j - k >= 0 && strcmp(word2[i], doc[j - k]) == 0) {
+					else if (j - k >= 0 && strcmp(word2[i], doc[j - k]) == 0) { //if word2 comes before word1
 						count++;
 						break;
 					}
 
 				}
-				if (count != temp)
+				if (count != temp) //ensures count does not get incremented twice for the same pattern
 					break;
 			}
 
@@ -161,14 +196,3 @@ int rate(const char document[], const char word1[][MAX_WORD_LENGTH + 1], const c
 	}
 	return count;
 }
-
-
-
-
-
-
-
-
-
-
-
