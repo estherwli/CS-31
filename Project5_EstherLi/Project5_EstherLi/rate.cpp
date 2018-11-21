@@ -38,7 +38,11 @@ void testMakeProper() {
 
 	char office1[][MAX_WORD_LENGTH + 1] = { "Jim", "Pam", "Dwight", "MICHAEL" };
 	char office2[][MAX_WORD_LENGTH + 1] = { "HALPERT", "beesly", "shRuTe", "scott" };
+<<<<<<< HEAD
 	int separation2[] = { 1, 0, 2, 100 };
+=======
+	int separation2[] = {1, 0, 2, 100};
+>>>>>>> 2202f7ca769a16d4bf2a57494111a4ad067cc1c3
 	assert(makeProper(office1, office2, separation2, 4) == 4); //all patterns are valid
 
 	char pll1[][MAX_WORD_LENGTH + 1] = { "emily", "hannah", "marin", "aria", "montgomery" };
@@ -74,6 +78,7 @@ void testRate() {
 	assert(rate(document3, word1, word2, s2, 4) == 0); //patterns do not exist because they only exist in a part of a word
 	assert(rate(document3, word1, word2, s2, 5) == 1); //pattern exists in more than one way in the document
 	assert(rate("doo", word1, word2, s2, 5) == 0); //document only contains 1 word
+<<<<<<< HEAD
 	assert(rate("doo          doo", word1, word2, s2, 5) == 1); //document contains 2 words separated by multiple spaces
 	assert(rate("doo 28DOO", word1, word2, s2, 5) == 1); //document contains 2 words separated by a space and numbers
 	assert(rate("doo-doo", word1, word2, s2, 5) == 0); //document contains words connected by a hyphen
@@ -82,6 +87,10 @@ void testRate() {
 	assert(rate("", word1, word2, s2, 5) == 0); //document is an empty string
 	assert(rate("doooooooooooooooooooooooo doo", word1, word2, s2, 5) == 0); //document has a word with over 20 characters
 	assert(rate("doo                        doo", word1, word2, s2, 5) == 1); //document contains more than 20 spaces
+=======
+	assert(rate("000", word1, word2, s2, 5) == 0); //document only contains non-letter characters
+	assert(rate("", word1, word2, s2, 5) == 0); //document is an empty string
+>>>>>>> 2202f7ca769a16d4bf2a57494111a4ad067cc1c3
 }
 
 void makeLowercase(char arr[][MAX_WORD_LENGTH + 1], int nPatterns) {
@@ -93,6 +102,7 @@ void makeLowercase(char arr[][MAX_WORD_LENGTH + 1], int nPatterns) {
 	}
 }
 
+<<<<<<< HEAD
 void makeArray(const char document[], char doc[][MAX_DOC_LENGTH + 1]) {
 	for (int i = 0; !isalpha(document[i]); i++) {
 		if (document[i] == '\0')
@@ -100,6 +110,11 @@ void makeArray(const char document[], char doc[][MAX_DOC_LENGTH + 1]) {
 	}
 	for (int i = 0, j = 0; document[i] != '\0' && j < MAX_DOC_LENGTH; j++) {
 		while (document[i] == ' ' || !(isalpha(document[i])))//skips to the next non-space character
+=======
+void makeArray(const char document[], char doc[][MAX_DOC_LENGTH]) {
+	for (int i = 0, j = 0; document[i] != '\0' && j < MAX_DOC_LENGTH; j++) {
+		while (document[i] == ' ')
+>>>>>>> 2202f7ca769a16d4bf2a57494111a4ad067cc1c3
 			i++;
 		for (int k = 0; document[i] != '\0' && document[i] != ' ' && k < MAX_DOC_LENGTH; i++) {
 			if (isalpha(document[i])) {
