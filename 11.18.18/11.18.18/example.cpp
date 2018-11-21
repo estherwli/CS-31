@@ -14,7 +14,7 @@ Pointers:
 
 void polarToCartesian(double rho, double theta, double* xx, double* yy);
 
-int main() {
+void main0() {
 	double r;
 	cin >> r;
 	double angle;
@@ -61,7 +61,7 @@ int* z = &k; //valid, z is an int pointer that now points to k
 cout << (k * b); //valid, 2 doubles
 cout << (k * p); //INVALID, can't multiply an int and a pointer
 cout << (k * *p); //valid, double multiplied by the double that p points to
-cout << (*z**P); //valid, the double that z points to multiplied by the double that p points to
+cout << (*z**p); //valid, the double that z points to multiplied by the double that p points to
 
 double* q;
 q = 4.7; //INVALID, undefined behavior because q is uninitialized
@@ -147,7 +147,7 @@ double* findFirstNegative(double a[], int n) {
 /*
 p = &a[0]
 &a[2] == &a[0] + 2
-&a[i] = &a[j] ==> i - j (compiler will take care of the /8 to account for 8 bytes per memory addresss)
+&a[i] - &a[j] ==> i - j (compiler will take care of the /8 to account for 8 bytes per memory addresss)
 &a[2] - &a[3] == -1
 
 null pointer value
@@ -194,7 +194,7 @@ void printPaycheck(Employee e) {
 	cout << "Pay to the order of " << e.name << " the amount $" << e.salary / 12 << endl;
 }
 
-int main() {
+void main2() {
 	Employee e1;
 	Employee e2;
 	e1.name = "Fred";
@@ -207,7 +207,8 @@ int main() {
 
 	Employee company[100]; //makes an array with 100 Employees
 	company[3].name = "Ricky";
-	for (int k = 0; k < company[3].name.size(); k++) //k < the size of the name string of the Employee object at position 3
+	int n = company[3].name.size();
+	for (int k = 0; k < n; k++) //k < the size of the name string of the Employee object at position 3
 		cout << company[3].name[k] << endl;
 
 	int nEmployees = 0;
@@ -227,3 +228,26 @@ caller's object should not change:
 caller's object should change:
 	pass by (non-const) referece
 */
+
+// return true if two C strings are equal
+bool strequal(char str1[], char str2[])
+{
+	while (*str1 != 0 && *str2 != 0)
+	{
+		if (*str1 != *str2)  // compare corresponding characters
+			return false;
+		str1++;            // advance to the next character
+		str2++;
+	}
+	return *str1 == *str2;   // both ended at same time?
+}
+
+int main()
+{
+	char a[15] = "Zhou";
+	char b[15] = "Zou";
+
+	if (strequal(a, b))
+		cout << "They're the same person!\n";
+}
+
