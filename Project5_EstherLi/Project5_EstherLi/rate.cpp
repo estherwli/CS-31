@@ -210,4 +210,8 @@ int rate(const char document[], const char word1[][MAX_WORD_LENGTH + 1], const c
 		}
 	}
 	return count;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> c5821db08a3ca19d2a1a6a0ad951542a9e643473
