@@ -185,7 +185,7 @@ void main1() {
 
 struct Employee { //convention: capitalize first letter
 	//data members/fields/instance variables/attributes: 
-	string name; 
+	string name;
 	double salary;
 	int age;
 }; //DON'T FORGET THE SEMICOLON!!!
@@ -203,7 +203,7 @@ void main2() {
 	e1.age++;
 
 	cout << "Enter a name: ";
-	getline(cin, e2.name); 
+	getline(cin, e2.name);
 
 	Employee company[100]; //makes an array with 100 Employees
 	company[3].name = "Ricky";
@@ -244,10 +244,18 @@ bool strequal(char str1[], char str2[])
 
 int main()
 {
-	char a[15] = "Zhou";
-	char b[15] = "Zou";
+	double* cat;
+	double mouse[5];
+	cat = &mouse[4];
+	*cat = 25;
+	*(mouse + 3) = 42;
+	cat -= 3;
+	cat[1] = 54;
+	cat[0] = 54;
+	bool b(cat[0] == cat[1]);
+	if (b)
+		cout << "true";
 
-	if (strequal(a, b))
-		cout << "They're the same person!\n";
+
 }
 
