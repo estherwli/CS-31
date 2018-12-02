@@ -63,7 +63,6 @@ private:
 	int    m_row;
 	int    m_col;
 	bool   m_hurt;
-	void   moveHere(int dir);
 	bool   onEdge(int dir);
 };
 
@@ -90,8 +89,6 @@ private:
 	int    m_col;
 	int    m_age;
 	bool   m_dead;
-	void   moveHere(int dir);
-	bool   onEdge(int dir);
 };
 
 class Arena
@@ -174,11 +171,16 @@ void Zombie::move()
 {
 	// Attempt to move in a random direction; if we can't move, don't move
 	int dir = randInt(0, NUMDIRS - 1);  // dir is now UP, DOWN, LEFT, or RIGHT
-	if (!onEdge(dir))
-		moveHere(dir);
+	int row;
+	int col;
+	m_arena->determineNewPosition(row, col, dir);
+	if (m_arena->player()->row() != row || m_arena->player()->col() != col) {
+		m_row = row;
+		m_col = col;
+	}
 }
 
-bool Zombie::getAttacked(int dir)  // return true if dies
+bool Zombie::getAttacked(int dir)  // return true if zombie dies
 {
 	// TODO:  If the zombie has been attacked once before, return true
 	// (since a second attack destroys a zombie).  Otherwise, if possible,
@@ -189,42 +191,23 @@ bool Zombie::getAttacked(int dir)  // return true if dies
 	if (m_hurt)
 		return true;
 	else if (!onEdge(dir)) {
-		moveHere(dir);
+		m_arena->determineNewPosition(m_row, m_col, dir);
 		m_hurt = true;
 		return false;
 	}
 	return true;
 }
 
-void Zombie::moveHere(int dir) { //private member helper function to move zombie once in direction specified in parameter
-	switch (dir) {
-	case 0:
-		m_row--;
-		break;
-	case 1:
-		m_row++;
-		break;
-	case 2:
-		m_col--;
-		break;
-	case 3:
-		m_col++;
-		break;
-	default:
-		return;
-	}
-}
-
 bool Zombie::onEdge(int dir) { //private member helper function to check if zombie is at the edge of the arena
 	switch (dir) {
 	case 0:
-		if (m_row <= 0)
+		if (m_row <= 1)
 			return true;
 	case 1:
 		if (m_row >= m_arena->rows())
 			return true;
 	case 2:
-		if (m_col <= 0)
+		if (m_col <= 1)
 			return true;
 	case 3:
 		if (m_col >= m_arena->cols())
@@ -281,29 +264,17 @@ void Player::stand()
 void Player::moveOrAttack(int dir)
 {
 	m_age++;
-	if (onEdge(dir)) //if player is trying to move outside of the arena, do nothing
-		return;
-
 	int tempRow = m_row;
 	int tempCol = m_col;
-	switch (dir) {
-	case 0:
-		tempRow--;
-		break;
-	case 1:
-		tempRow++;
-		break;
-	case 2:
-		tempCol--;
-		break;
-	case 3:
-		tempCol++;
-		break;
+	if (m_arena->determineNewPosition(tempRow, tempCol, dir)) {
+		if (m_arena->numZombiesAt(tempRow, tempCol) == 0) {
+			m_row = tempRow;
+			m_col = tempCol;
+		}
+		else {
+			m_arena->attackZombieAt(tempRow, tempCol, dir);
+		}
 	}
-	if (m_arena->numZombiesAt(tempRow, tempCol) == 0) //if no zombies adjacent to player in direction of dir, move there
-		moveHere(dir);
-	else
-		m_arena->attackZombieAt(m_row, m_col, dir); //if there is at least one zombie, attack it
 }
 
 bool Player::isDead() const
@@ -316,44 +287,6 @@ void Player::setDead()
 	m_dead = true;
 }
 
-void Player::moveHere(int dir) {
-	switch (dir) {
-	case 0:
-		m_row--;
-		break;
-	case 1:
-		m_row++;
-		break;
-	case 2:
-		m_col--;
-		break;
-	case 3:
-		m_col++;
-		break;
-	default:
-		return;
-	}
-}
-
-bool Player::onEdge(int dir) {
-	switch (dir) {
-	case 0:
-		if (m_row <= 0)
-			return true;
-	case 1:
-		if (m_row >= m_arena->rows())
-			return true;
-	case 2:
-		if (m_col <= 0)
-			return true;
-	case 3:
-		if (m_col >= m_arena->cols())
-			return true;
-	default:
-		return false;
-	}
-	return false;
-}
 
 ///////////////////////////////////////////////////////////////////////////
 //  Arena implementations
@@ -377,9 +310,8 @@ Arena::~Arena()
 {
 	// TODO:  Delete the player and all remaining dynamically allocated zombies.
 	delete m_player;
-	for (int i = 0; i < m_nZombies; i++) {
+	for (int i = 0; i < m_nZombies; i++) 
 		delete m_zombies[i];
-	}
 }
 
 int Arena::rows() const
@@ -423,19 +355,27 @@ bool Arena::determineNewPosition(int& r, int& c, int dir) const
 	switch (dir)
 	{
 	case UP:
-		if (r > 0)
+		if (r <= 1)
+			return false;
+		else
 			r--;
 		break;
 	case DOWN:
-		if (r < m_rows)
+		if (r >= m_rows)
+			return false;
+		else
 			r++;
 		break;
 	case LEFT:
-		if (c > 0)
+		if (c <= 1)
+			return false;
+		else
 			c--;
 		break;
 	case RIGHT:
-		if (c < m_cols)
+		if (c >= m_cols)
+			return false;
+		else
 			c++;
 		break;
 	default:
@@ -543,7 +483,6 @@ bool Arena::attackZombieAt(int r, int c, int dir)
 	for (int i = 0; i < m_nZombies; i++) {
 		if (m_zombies[i]->row() == r && m_zombies[i]->col() == c) {
 			if (m_zombies[i]->getAttacked(dir)) {
-				m_zombies[i]->getAttacked(dir);
 				delete m_zombies[i];
 				m_zombies[i] = m_zombies[m_nZombies - 1];
 				m_zombies[m_nZombies] = nullptr;
@@ -557,16 +496,15 @@ bool Arena::attackZombieAt(int r, int c, int dir)
 
 bool Arena::moveZombies()
 {
-	for (int k = 0; k < m_nZombies; k++)
-	{
-		this->m_zombies[k]->move();
-		if (this->m_zombies[k]->row() == this->m_player->row() && this->m_zombies[k]->col() == this->m_player->col())
-			this->m_player->setDead();
+	for (int k = 0; k < m_nZombies; k++) {
+		m_zombies[k]->move();
+		if (m_zombies[k]->row() == m_player->row() && m_zombies[k]->col() == m_player->col())
+			m_player->setDead();
 	}
-		// TODO:  Have the k-th zombie in the arena make one move.
-		//        If that move results in that zombie being in the same
-		//        position as the player, the player dies.
-	// return true if the player is still alive, false otherwise
+	// TODO:  Have the k-th zombie in the arena make one move.
+	//        If that move results in that zombie being in the same
+	//        position as the player, the player dies.
+// return true if the player is still alive, false otherwise
 	return !m_player->isDead();
 }
 
