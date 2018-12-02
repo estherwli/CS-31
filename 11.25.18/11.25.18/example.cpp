@@ -118,6 +118,7 @@ a <==> &a[0]
 p[i] ==> *(p + i)
 &a[i] - &a[j] ==> i - j
 *p = a[5] IS NOT THE SAME AS p = &a[5]
+p->m ==> (*p).m
 
 *****************************************************************
 				 v same thing as const string a[]
@@ -240,7 +241,7 @@ some struct type					type
 /*
 -member functions may be private, so only other member functions can call it
 -constructors are called automatically when an object is created; not called w dot or -> operators
--const objects can only be called on by const member functions 
+-const objects can only be called on by const member functions
 -in C++ there is no difference between struct and class EXCEPT:
 	members are public by default in struct
 	members are private by default in class
@@ -248,10 +249,10 @@ some struct type					type
 -collection with interesting behavior --> use class
 */
 
-class Target { 
+class Target {
 public:
 	//constructor
-	Target(); 
+	Target();
 
 	//this following is the interface; implementation is done later
 	bool move(char dir);
@@ -321,11 +322,93 @@ void movemain() {
 
 	//t.pos = 42; WON'T COMPILE bc pos is a private member
 
-	repeatMove(t, 'R', 3);
+		repeatMove(t, 'R', 3);
 
 	cout << t.position();
 	//cout << t.pos; WON'T COMPILE bc main function has no permission to look at private member of t
+
+	Target ta[3]; //implies constructor gets called as many times as there are elements in the array
+	ta[0].move('L');
+	ta[1].move('R');
+	repeatMove(ta[2], 'L', 3);
+
 }
+
+/*
+Data members should always be private
+	-data member might be changed by other code without being known by class functions
+	-changing implementation (deleting a data member) could make a function run faster but might break other code
+	-exception: might be okay to use public data members if there is no constraints and no interesting functionality in the class
+*/
+
+void f() {
+	while (...)
+		playGame();
+}
+
+/*
+-when you declare a NAMED local variable, it goes away after the program leaves the function
+-when you declare a variable using NEW, it does not go away after the program leaves the function
+	-objects declared with NEW only go away if you explicitly tell it to go away
+-garbage: objects that were created but we no longer have access to
+-dynamic allocation: allocation occurs during function execution; potential for garbage; keeps track of all the memory locations it's given out
+-garbage collector: C++ may use a garbage collector to reclaim memory locations
+-memory leak: not every allocation turns into garbage, but some do, so over time memory will run out
+-dangling pointer: the object it points to has been deleted; pointer is not null, but trying to follow it is undefined behavior
+*/
+
+void addTargets(Target* ta[], int& nt, int howManyNewOnes) {
+	//Target t; WRONG bc local variable does not exist outside the function
+
+	for (int k = 0; k < howManyNewOnes; k++) {
+		ta[nt] = new Target; //location doesn't have a name; only way to get to it is via the pointer; uses new location for each iteration
+		nt++;
+
+		/*
+		Target t;
+		ta[nt] = &t;
+		nt++;
+		WRONG bc t's scope does not exist outside the loop
+		*/
+
+	}
+}
+
+void playGame() {
+	Target* targets[1000]; //left uninitialized 
+	int nTargets = 0;
+	
+	if (1)
+		addTargets(targets, nTargets, 3);
+	int i;
+	//... something gives i a value, say 1
+	targets[i]->move('R');
+
+	delete targets[1]; //trying to follow targets[1] is now undefined behavior; targets[1] is now a dangling pointer
+	targets[1] = targets[2]; //targets[1] and targets[2] now point to the same object
+	nTargets--;
+	targets[2] = nullptr; //not necessary, but comforting to some
+}
+
+class Person {
+public:
+	Person(string nm, int year);
+	string name() const; //not allowed to name a member function the same as a data member
+private:
+	string m_name; //convention for data members: name_, m_name 
+	int m_birthYear;
+};
+
+Person::Person(string nm, int year) {
+	m_name = nm;
+	m_birthYear = year;
+}
+
+string Person::name() const {
+	return m_name;
+}
+
+Person p("Fred", 1999);
 
 
 
@@ -414,56 +497,11 @@ void mainSwap()
 	//3 4 79 -1 9 22 19
 }
 
-void removeS(char* str) {
-	for (; *str != 0; str++) {
-		if (*str == 'S' || *str == 's') {
-			for (char* a = str; *a != 0; a++)
-				*a = *(a + 1);
-			str--;
-		}
-	}
-}
 
-void removsSmain()
-{
-	char msg[50] = "She'll be a massless princess";
-	removeS(msg);
-	cout << msg;  // prints "he'll be a male prince"
-}
 
-int* nochange(int* p)
-{
-	return p;
-}
 
-int* getPtrToArray(int& m)
-{
-	int anArray[100];
-	for (int j = 0; j < 100; j++)
-		anArray[j] = 100 - j;
-	m = 100;
-	return nochange(anArray);
-}
 
-void f()
-{
-	int junk[100];
-	for (int k = 0; k < 100; k++)
-		junk[k] = 123400000 + k;
-	junk[50]++;
-}
 
-int main()
-{
-	int n;
-	int* ptr = getPtrToArray(n);
-	f();
-	for (int i = 0; i < 3; i++)
-		cout << *(ptr + i) << ' ';
-	for (int i = n - 3; i < n; i++)
-		cout << ptr[i] << ' ';
-	cout << endl;
-}
 
 
 
