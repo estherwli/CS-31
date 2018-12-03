@@ -428,12 +428,19 @@ testing for memory leaks:
 -running under g31 will tell you if there's a memory leak
 
 -if you declare no constructor at all, the compler writes for you a zero-argument constructor ("default constructor") 
+-if you declare a constructor, there will be no default constructor
 */
 
 class Toy {
 	//...
 };
 
+
+/* 
+Pet pa[100] is INVALID unless there is a default constructor 
+	-make an overloaded default constructor only if it makes sense to have a default constructor
+	-make an array of pointers ==> Pet* pa[100]; dynamically allocate a new Pet, store the pointer to that Pet
+*/
 class Pet {
 public: 
 	Pet(string nm, int initialHealth); //the constructor
@@ -473,6 +480,11 @@ void f() {
 		//...
 		return;
 	}
+
+	Pet* pp = new Pet("Fido", 10);
+	//pp.addToy(); INVALID because pp is not a Pet object, but a pointer to a Pet object
+	pp->addToy(); //valid; same thing as (*pp).addToy();
+	delete pp; //pointer going away does not trigger delete
 }
 
 

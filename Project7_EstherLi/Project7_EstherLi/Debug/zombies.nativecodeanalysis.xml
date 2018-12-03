@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DEFECTS>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>c:\users\esther\desktop\cs_31\project7_estherli\project7_estherli\</FILEPATH>
+      <FILENAME>zombies.cpp</FILENAME>
+      <LINE>145</LINE>
+      <COLUMN>8</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'Zombie::m_hurt' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>Zombie::{ctor}</FUNCTION>
+    <DECORATED>??0Zombie@@QAE@PAVArena@@HH@Z</DECORATED>
+    <FUNCLINE>145</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+  <DEFECT>
+    <SFA>
+      <FILEPATH>c:\users\esther\desktop\cs_31\project7_estherli\project7_estherli\</FILEPATH>
+      <FILENAME>zombies.cpp</FILENAME>
+      <LINE>362</LINE>
+      <COLUMN>7</COLUMN>
+    </SFA>
+    <DEFECTCODE>26495</DEFECTCODE>
+    <DESCRIPTION>Variable 'Arena::m_zombies' is uninitialized. Always initialize a member variable (type.6).</DESCRIPTION>
+    <FUNCTION>Arena::{ctor}</FUNCTION>
+    <DECORATED>??0Arena@@QAE@HH@Z</DECORATED>
+    <FUNCLINE>362</FUNCLINE>
+    <PATH></PATH>
+  </DEFECT>
+</DEFECTS>
