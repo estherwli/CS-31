@@ -177,33 +177,35 @@ void Zombie::move()
 
 bool Zombie::getAttacked(int dir)  // return true if zombie dies
 {
-	if (m_hurt)
-		return true; //if zombie is already hurt, it dies
-	else if (!onEdge(dir)) {
-		m_arena->determineNewPosition(m_row, m_col, dir); //if zombie survived injury and can move in direction of dir, move once in direction dir
-		m_hurt = true;
+	if (m_hurt || onEdge(dir))
+		return true; //if zombie is already hurt or hits a wall, it dies
+	else {
+		m_arena->determineNewPosition(m_row, m_col, dir); //if zombie survived injury, move once in direction dir
+		m_hurt = true; //zombie is now hurt
 		return false;
 	}
-	return true; //if zombie hits against wall, it dies
 }
 
 bool Zombie::onEdge(int dir) { //private member helper function to check if zombie is at the edge of the arena and cannot move in direction dir
 	switch (dir) {
 	case 0:
-		if (m_row <= 1)
+		if (m_row == 1)
 			return true;
+		break;
 	case 1:
-		if (m_row >= m_arena->rows())
+		if (m_row == m_arena->rows())
 			return true;
+		break;
 	case 2:
-		if (m_col <= 1)
+		if (m_col == 1)
 			return true;
+		break;
 	case 3:
-		if (m_col >= m_arena->cols())
+		if (m_col == m_arena->cols())
 			return true;
-	default:
-		return false;
+		break;
 	}
+	return false;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -323,7 +325,7 @@ int Arena::zombieCount() const
 
 int Arena::numZombiesAt(int r, int c) const //return the number of zombies at row r, column c
 {
-	
+
 	int count = 0;
 	for (int i = 0; i < m_nZombies; i++) {
 		if (m_zombies[i]->row() == r && m_zombies[i]->col() == c)
@@ -337,25 +339,25 @@ bool Arena::determineNewPosition(int& r, int& c, int dir) const //move to new po
 	switch (dir)
 	{
 	case UP:
-		if (r <= 1)
+		if (r == 1)
 			return false;
 		else
 			r--;
 		break;
 	case DOWN:
-		if (r >= m_rows)
+		if (r == m_rows)
 			return false;
 		else
 			r++;
 		break;
 	case LEFT:
-		if (c <= 1)
+		if (c == 1)
 			return false;
 		else
 			c--;
 		break;
 	case RIGHT:
-		if (c >= m_cols)
+		if (c == m_cols)
 			return false;
 		else
 			c++;
