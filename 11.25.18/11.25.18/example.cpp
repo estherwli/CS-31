@@ -352,9 +352,13 @@ void f() {
 	-objects declared with NEW only go away if you explicitly tell it to go away
 -garbage: objects that were created but we no longer have access to
 -dynamic allocation: allocation occurs during function execution; potential for garbage; keeps track of all the memory locations it's given out
+	-objects dynamically allocated don't go away after function ends --> turn into garbage 
+	-prevent garbage: make sure you don't lose the last pointer to the object without deleting the object
 -garbage collector: C++ may use a garbage collector to reclaim memory locations
 -memory leak: not every allocation turns into garbage, but some do, so over time memory will run out
 -dangling pointer: the object it points to has been deleted; pointer is not null, but trying to follow it is undefined behavior
+-delete: can be called on a pointer to a dynamically allocated object or a nullptr
+	-we don't need to check if (pointer != nullptr)
 */
 
 void addTargets(Target* ta[], int& nt, int howManyNewOnes) {
@@ -377,17 +381,21 @@ void addTargets(Target* ta[], int& nt, int howManyNewOnes) {
 void playGame() {
 	Target* targets[1000]; //left uninitialized 
 	int nTargets = 0;
-	
+
 	if (1)
 		addTargets(targets, nTargets, 3);
 	int i;
 	//... something gives i a value, say 1
 	targets[i]->move('R');
 
-	delete targets[1]; //trying to follow targets[1] is now undefined behavior; targets[1] is now a dangling pointer
+	delete targets[1]; //deletes the object that targets[1] points to;
+	//trying to follow targets[1] is now undefined behavior; targets[1] is now a dangling pointer
 	targets[1] = targets[2]; //targets[1] and targets[2] now point to the same object
 	nTargets--;
 	targets[2] = nullptr; //not necessary, but comforting to some
+	//...
+	for (int k = 0; k < nTargets; k++)
+		delete targets[k];
 }
 
 class Person {
@@ -410,6 +418,62 @@ string Person::name() const {
 
 Person p("Fred", 1999);
 
+/*
+-named local variables ("automatic variables") live on the STACK
+-variables declared outside of any function live in the GLOBAL STORAGE AREA ("static storage area")
+-dynamically allocated objects live on the HEAP 
+
+testing for memory leaks:
+-write something out for every allocation and every deletion --> check if every allocation matches a deletion
+-running under g31 will tell you if there's a memory leak
+
+-if you declare no constructor at all, the compler writes for you a zero-argument constructor ("default constructor") 
+*/
+
+class Toy {
+	//...
+};
+
+class Pet {
+public: 
+	Pet(string nm, int initialHealth); //the constructor
+	~Pet(); //the destructor: automatically called when an object is about to go away
+	void addToy();
+
+private:
+	string m_name;
+	int m_health;
+	//Toy m_favoriteToy; will not work if a Pet doesn't have a favorite toy
+	Toy* m_favoriteToy; //if a Pet doesn't have a favorite toy, make this a nullptr
+};
+
+Pet::Pet(string nm, int initialHealth) {
+	m_name = nm;
+	m_health = initialHealth;
+	m_favoriteToy = nullptr;
+}
+
+void Pet::addToy() {
+	delete m_favoriteToy; //prevents Pet from having more than 1 favorite toy
+	m_favoriteToy = new Toy;
+}
+
+Pet::~Pet() {
+	delete m_favoriteToy;
+}
+
+
+
+void f() {
+	Pet p("Frisky", 20);
+	p.addToy();
+	//...
+	//...
+	if () {
+		//...
+		return;
+	}
+}
 
 
 
