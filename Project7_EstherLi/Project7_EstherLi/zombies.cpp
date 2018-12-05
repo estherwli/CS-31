@@ -189,19 +189,19 @@ bool Zombie::getAttacked(int dir)  // return true if zombie dies
 bool Zombie::onEdge(int dir) { //private member helper function to check if zombie is at the edge of the arena and cannot move in direction dir
 	switch (dir) {
 	case 0:
-		if (m_row == 1)
+		if (m_row == 1) //if zombie is already at the top
 			return true;
 		break;
 	case 1:
-		if (m_row == m_arena->rows())
+		if (m_row == m_arena->rows()) //if zombie is already at the bottom
 			return true;
 		break;
 	case 2:
-		if (m_col == 1)
+		if (m_col == 1) //if zombie is already at the leftmost column
 			return true;
 		break;
 	case 3:
-		if (m_col == m_arena->cols())
+		if (m_col == m_arena->cols()) //if zombie is already at the rightmost column
 			return true;
 		break;
 	}
@@ -328,7 +328,7 @@ int Arena::numZombiesAt(int r, int c) const //return the number of zombies at ro
 
 	int count = 0;
 	for (int i = 0; i < m_nZombies; i++) {
-		if (m_zombies[i]->row() == r && m_zombies[i]->col() == c)
+		if (m_zombies[i]->row() == r && m_zombies[i]->col() == c) //if there is a zombie with the same row and column as inputs r and c
 			count++;
 	}
 	return count;
@@ -338,26 +338,26 @@ bool Arena::determineNewPosition(int& r, int& c, int dir) const //move to new po
 {
 	switch (dir)
 	{
-	case UP:
-		if (r == 1)
+	case UP: 
+		if (r == 1) //if position is already at the top
 			return false;
 		else
 			r--;
 		break;
 	case DOWN:
-		if (r == m_rows)
+		if (r == m_rows) //if position is already at the bottom
 			return false;
 		else
 			r++;
 		break;
 	case LEFT:
-		if (c == 1)
+		if (c == 1) //if position is already at the leftmost column
 			return false;
 		else
 			c--;
 		break;
 	case RIGHT:
-		if (c == m_cols)
+		if (c == m_cols) //if position is already at the rightmost column
 			return false;
 		else
 			c++;
@@ -431,15 +431,13 @@ void Arena::display() const
 
 bool Arena::addZombie(int r, int c)
 {
-	// dynamically allocate a new Zombie at coordinates (r,c) as long as nZombies is less than MAXZOMBIES
-
 	if (m_nZombies >= MAXZOMBIES)
 		return false;
 
 	if (m_player->row() == r && m_player->col() == c)
 		return false;
 
-	m_zombies[m_nZombies] = new Zombie(this, r, c);
+	m_zombies[m_nZombies] = new Zombie(this, r, c); // dynamically allocate a new Zombie at coordinates (r,c) as long as nZombies is less than MAXZOMBIES
 	m_nZombies++;
 	return true;
 }
