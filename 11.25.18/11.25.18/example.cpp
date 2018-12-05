@@ -352,7 +352,7 @@ void f() {
 	-objects declared with NEW only go away if you explicitly tell it to go away
 -garbage: objects that were created but we no longer have access to
 -dynamic allocation: allocation occurs during function execution; potential for garbage; keeps track of all the memory locations it's given out
-	-objects dynamically allocated don't go away after function ends --> turn into garbage 
+	-objects dynamically allocated don't go away after function ends --> turn into garbage
 	-prevent garbage: make sure you don't lose the last pointer to the object without deleting the object
 -garbage collector: C++ may use a garbage collector to reclaim memory locations
 -memory leak: not every allocation turns into garbage, but some do, so over time memory will run out
@@ -421,13 +421,13 @@ Person p("Fred", 1999);
 /*
 -named local variables ("automatic variables") live on the STACK
 -variables declared outside of any function live in the GLOBAL STORAGE AREA ("static storage area")
--dynamically allocated objects live on the HEAP 
+-dynamically allocated objects live on the HEAP
 
 testing for memory leaks:
 -write something out for every allocation and every deletion --> check if every allocation matches a deletion
 -running under g31 will tell you if there's a memory leak
 
--if you declare no constructor at all, the compler writes for you a zero-argument constructor ("default constructor") 
+-if you declare no constructor at all, the compler writes for you a zero-argument constructor ("default constructor")
 -if you declare a constructor, there will be no default constructor
 */
 
@@ -436,13 +436,13 @@ class Toy {
 };
 
 
-/* 
-Pet pa[100] is INVALID unless there is a default constructor 
+/*
+Pet pa[100] is INVALID unless there is a default constructor
 	-make an overloaded default constructor only if it makes sense to have a default constructor
 	-make an array of pointers ==> Pet* pa[100]; dynamically allocate a new Pet, store the pointer to that Pet
 */
 class Pet {
-public: 
+public:
 	Pet(string nm, int initialHealth); //the constructor
 	~Pet(); //the destructor: automatically called when an object is about to go away
 	void addToy();
@@ -487,6 +487,175 @@ void f() {
 	delete pp; //pointer going away does not trigger delete
 }
 
+/*
+Target t2(); //a function that returns a Target
+Target t; //uses default constructor
+
+. and -> have equal precedence (left to right)
+*/
+
+/*
+
+class Fan {
+public:
+	void turnOn();
+};
+
+class Rock {
+public:
+	double weight() const;
+};
+
+class Robot {
+	Fan m_cooler; //not a pointer bc cooler is always associated with robot; cooler existence depends on robot existence
+	Rock* m_rock; //a pointer bc rock is not always associated with robot; still exists in game when robot dies
+};
+
+void Robot::blah() {
+	if (m_rock != nullptr && m_rock->weight() >= 50) //always check for nullptr first so we don't try to follow a nullptr
+		m_cooler.turnOn();
+}
+
+*/
+
+
+class Employee {
+public:
+	Employee(string nm, double sal, Company* cp);
+	void receiveBonus() const;
+private:
+	string m_name;
+	double m_salary;
+	Company* m_company;
+};
+
+class Company {
+public:
+	Company(); //don't forget to declare constructor here (even if there are zero arguments)
+	~Company();
+	void hire(string nm, double sal);
+	void setBonusRate(double rate);
+	void giveBonuses() const;
+	double bonusRate() const;
+private:
+	Employee* m_employees[100];
+	int m_nEmployees;
+	double m_bonusRate;
+};
+
+Employee::Employee(string nm, double sal, Company* cp) {
+	m_name = nm;
+	m_salary = sal;
+	m_company = cp;
+}
+
+Company::Company() {
+	m_nEmployees = 0;
+	m_bonusRate = 0;
+}
+
+Company::~Company() {
+	for (int k = 0; k < m_nEmployees; k++)
+		delete m_Employees[k];
+}
+
+void Company::hire(string nm, double sal) { //here the employee only exists after being hired 
+	if (m_nEmployees == 100)
+		return;
+	else {
+		m_employees[m_nEmployees] = new Employee(nm, sal, this);
+		m_nEmployees++;
+	}
+}
+
+void Company::setBonusRate(double rate) {
+	m_bonusRate = rate;
+}
+
+void Company::giveBonuses() const {
+	for (int k = 0; k < m_nEmployees; k++)
+		m_employees[k]->receiveBonus();
+}
+
+double Company::bonusRate() const {
+	return m_bonusRate;
+}
+
+void Employee::receiveBonus() const {
+	cout << "Pay to " << m_name << "$" << m_company->bonusRate() * m_salary << endl;
+}
+
+int main() {
+	Company myCompany;
+	myCompany.hire("Ricky", 80000);
+	myCompany.hire("Lucy", 50000);
+	Company yourCompany;
+	yourCompany.hire("Fred", 40000);
+	myCompany.setBonusRate(0.02);
+}
+
+
+
+
+class Complex {
+public:
+	Complex(double re, double im);
+	double real() const;
+	double imag() const;
+private: 
+	double m_rho;
+	double m_theta;
+};
+
+Complex::Complex(double re, double im) {
+	m_rho = sqrt(re * re + im * im);
+	m_theta = atan(im, re);
+}
+
+double Complex::real() const {
+	return m_rho * cos(m_theta);
+}
+
+double Complex::imag() const {
+	return m_rho * sin(m_theta);
+}
+
+int main() {
+	Complex c1(4, -3); //4-3i
+	cout << c1.real(); //writes 4
+	Complex ca[100]; //won't compile unless there's a zero-argument constructor!!!!
+}
+
+/*
+you can overload a function name if the functions differ in the number or types of parameters
+
+
+void draw(Rectangle r);
+void draw(Circle c);
+
+void f(int i);
+void f(double d);
+
+void g(int i, double d);
+void g(double d, int i);
+
+int main() {
+	Rectangle a;
+	Circle b;
+
+	draw(a);
+	draw(b);
+
+	f(3);
+	f(3.0);
+	f('A'); //invalid parameter type, but resolves to calling the int version of f ==> "best version" of function f
+
+	g(1, 2); //compiler error! considered ambiguous because there is no "best version" of function g
+
+
+}
+
+*/
 
 
 

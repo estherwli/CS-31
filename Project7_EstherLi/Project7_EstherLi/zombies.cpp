@@ -13,6 +13,14 @@
 #include <random>
 #include <utility>
 #include <cstdlib>
+#include <type_traits>
+#include <cassert>
+
+#define CHECKTYPE(c, f, r, a)  \
+	static_assert(std::is_same<decltype(&c::f), r (c::*)a>::value, \
+	   "FAILED: You changed the type of " #c "::" #f);  \
+	[[gnu::unused]] r (c::* xxx##c##_##f) a = &c::f
+
 using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////
@@ -595,9 +603,95 @@ int randInt(int min, int max)
 ///////////////////////////////////////////////////////////////////////////
 //  main()
 ///////////////////////////////////////////////////////////////////////////
+void thisFunctionWillNeverBeCalled()
+{
+	// If the student deleted or changed the interfaces to the public
+	// functions, this won't compile.  (This uses magic beyond the scope
+	// of CS 31.)
+
+	Zombie(static_cast<Arena*>(0), 1, 1);
+	CHECKTYPE(Zombie, row, int, () const);
+	CHECKTYPE(Zombie, col, int, () const);
+	CHECKTYPE(Zombie, move, void, ());
+	CHECKTYPE(Zombie, getAttacked, bool, (int));
+
+	Player(static_cast<Arena*>(0), 1, 1);
+	CHECKTYPE(Player, row, int, () const);
+	CHECKTYPE(Player, col, int, () const);
+	CHECKTYPE(Player, age, int, () const);
+	CHECKTYPE(Player, isDead, bool, () const);
+	CHECKTYPE(Player, stand, void, ());
+	CHECKTYPE(Player, moveOrAttack, void, (int));
+	CHECKTYPE(Player, setDead, void, ());
+
+	Arena(1, 1);
+	CHECKTYPE(Arena, rows, int, () const);
+	CHECKTYPE(Arena, cols, int, () const);
+	CHECKTYPE(Arena, player, Player*, () const);
+	CHECKTYPE(Arena, zombieCount, int, () const);
+	CHECKTYPE(Arena, numZombiesAt, int, (int, int) const);
+	CHECKTYPE(Arena, determineNewPosition, bool, (int&, int&, int) const);
+	CHECKTYPE(Arena, display, void, () const);
+	CHECKTYPE(Arena, addZombie, bool, (int, int));
+	CHECKTYPE(Arena, addPlayer, bool, (int, int));
+	CHECKTYPE(Arena, attackZombieAt, bool, (int, int, int));
+	CHECKTYPE(Arena, moveZombies, bool, ());
+
+	Game(1, 1, 1);
+	CHECKTYPE(Game, play, void, ());
+}
+
+void doBasicTests()
+{
+	{
+		Arena a(10, 20);
+		assert(a.addPlayer(2, 6));
+		Player* pp = a.player();
+		assert(pp->row() == 2 && pp->col() == 6 && !pp->isDead());
+		pp->moveOrAttack(UP);
+		assert(pp->row() == 1 && pp->col() == 6 && !pp->isDead());
+		pp->moveOrAttack(UP);
+		assert(pp->row() == 1 && pp->col() == 6 && !pp->isDead());
+		pp->setDead();
+		assert(pp->row() == 1 && pp->col() == 6 && pp->isDead());
+	}
+	{
+		Arena a(2, 2);
+		assert(a.addPlayer(1, 1));
+		assert(a.addZombie(2, 2));
+		Player* pp = a.player();
+		assert(a.moveZombies());
+		assert(!pp->isDead());
+		for (int k = 0; k < 1000 && !pp->isDead() && a.moveZombies(); k++)
+			;
+		assert(pp->isDead());
+	}
+	{
+		Arena a(2, 6);
+		assert(a.addPlayer(2, 1));
+		assert(a.addZombie(2, 3));
+		Player* pp = a.player();
+		pp->moveOrAttack(RIGHT);
+		assert(a.zombieCount() == 1 && a.numZombiesAt(2, 3) == 1);
+		pp->moveOrAttack(RIGHT);
+		assert(a.zombieCount() == 1 && a.numZombiesAt(2, 4) == 1);
+		pp->moveOrAttack(RIGHT);
+		assert(a.zombieCount() == 1 && a.numZombiesAt(2, 4) == 1);
+		pp->moveOrAttack(RIGHT);
+		assert(a.zombieCount() == 0 && a.numZombiesAt(2, 4) == 0 && a.numZombiesAt(2, 5) == 0);
+		a.addZombie(1, 3);
+		assert(a.zombieCount() == 1 && a.numZombiesAt(1, 3) == 1);
+		pp->moveOrAttack(UP);
+		assert(a.zombieCount() == 0 && a.numZombiesAt(1, 3) == 0);
+	}
+	cout << "Passed all basic tests" << endl;
+}
+
 
 int main()
 {
+	doBasicTests(); // Remove this line after completing test.
+	return 0;       // Remove this line after completing test.
 	// Create a game
 	// Use this instead to create a mini-game:   Game g(3, 4, 2);
 	Game g(3, 4, 2);
